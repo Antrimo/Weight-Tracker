@@ -1,106 +1,99 @@
-
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:weight/datetime/date_time.dart';
 
-// reference our box
 final _myBox = Hive.box("Habit_Database");
 
 class HabitDatabase {
   List todaysHabitList = [];
   Map<DateTime, int> heatMapDataSet = {};
+  List<Map<String, dynamic>> weightList = []; // Correcting the data structure
 
-  // create initial default data
+  /// Creates default habit data and saves the start date
   void createDefaultData() {
     todaysHabitList = [
       ["Run", false],
       ["Read", false],
     ];
-
     _myBox.put("START_DATE", todaysDateFormatted());
-  }
-
-  // load data if it already exists
-  void loadData() {
-    // if it's a new day, get habit list from database
-    if (_myBox.get(todaysDateFormatted()) == null) {
-      todaysHabitList = _myBox.get("CURRENT_HABIT_LIST");
-      // set all habit completed to false since it's a new day
-      for (int i = 0; i < todaysHabitList.length; i++) {
-        todaysHabitList[i][1] = false;
-      }
-    }
-    // if it's not a new day, load todays list
-    else {
-      todaysHabitList = _myBox.get(todaysDateFormatted());
-    }
-  }
-
-  // update database
-  void updateDatabase() {
-    // update todays entry
-    _myBox.put(todaysDateFormatted(), todaysHabitList);
-
-    // update universal habit list in case it changed (new habit, edit habit, delete habit)
     _myBox.put("CURRENT_HABIT_LIST", todaysHabitList);
+    updateDatabase();
+  }
 
-    // calculate habit complete percentages for each day
+  /// Load weight data from Hive
+  void loadDataWeight() {
+    weightList = List<Map<String, dynamic>>.from(_myBox.get("WEIGHT_LIST", defaultValue: []));
+  }
+
+  /// Load daily habit list for today
+  void loadData() {
+    if (_myBox.get(todaysDateFormatted()) == null) {
+      todaysHabitList = List.from(_myBox.get("CURRENT_HABIT_LIST"));
+      for (int i = 0; i < todaysHabitList.length; i++) {
+        todaysHabitList[i][1] = false; 
+      }
+    } else {
+      // Load data for today
+      todaysHabitList = List.from(_myBox.get(todaysDateFormatted()));
+    }
+  }
+
+  /// Save habit list and weight list to the Hive database
+  void updateDatabase() {
+    _myBox.put(todaysDateFormatted(), todaysHabitList); // Save today's data
+    _myBox.put("CURRENT_HABIT_LIST", todaysHabitList); // Save current habit list
+    _myBox.put("WEIGHT_LIST", weightList); // Save weight list
     calculateHabitPercentages();
-
-    // load heat map
     loadHeatMap();
   }
 
-  void calculateHabitPercentages() {
-    int countCompleted = 0;
-    for (int i = 0; i < todaysHabitList.length; i++) {
-      if (todaysHabitList[i][1] == true) {
-        countCompleted++;
-      }
-    }
+  /// Save weight with today's date in the weight list
+  void saveWeight(String weight) {
+  String today = todaysDateFormatted();
+  
+  // Check if today's weight entry already exists and update it
+  int index = weightList.indexWhere((entry) => entry['date'] == today);
+  
+  if (index != -1) {
+    // If weight entry exists, update it
+    weightList[index]['weight'] = weight;
+  } else {
+    // If no entry exists for today, add a new one
+    weightList.add({
+      "date": today,
+      "weight": weight,
+    });
+  }
 
+  updateDatabase(); // Ensure the database is updated after saving
+}
+
+
+  /// Calculate the percentage of completed habits
+  void calculateHabitPercentages() {
+    int countCompleted = todaysHabitList.where((habit) => habit[1] == true).length;
     String percent = todaysHabitList.isEmpty
         ? '0.0'
         : (countCompleted / todaysHabitList.length).toStringAsFixed(1);
-
-    // key: "PERCENTAGE_SUMMARY_yyyymmdd"
-    // value: string of 1dp number between 0.0-1.0 inclusive
+    
     _myBox.put("PERCENTAGE_SUMMARY_${todaysDateFormatted()}", percent);
   }
 
+  /// Load the heat map data based on habit completion percentages
   void loadHeatMap() {
     DateTime startDate = createDateTimeObject(_myBox.get("START_DATE"));
-
-    // count the number of days to load
     int daysInBetween = DateTime.now().difference(startDate).inDays;
 
-    // go from start date to today and add each percentage to the dataset
-    // "PERCENTAGE_SUMMARY_yyyymmdd" will be the key in the database
-    for (int i = 0; i < daysInBetween + 1; i++) {
+    for (int i = 0; i <= daysInBetween; i++) {
       String yyyymmdd = convertDateTimeToString(
         startDate.add(Duration(days: i)),
       );
 
-      double strengthAsPercent = double.parse(
+      double strengthAsPercent = double.tryParse(
         _myBox.get("PERCENTAGE_SUMMARY_$yyyymmdd") ?? "0.0",
-      );
+      ) ?? 0.0;
 
-      // split the datetime up like below so it doesn't worry about hours/mins/secs etc.
-
-      // year
-      int year = startDate.add(Duration(days: i)).year;
-
-      // month
-      int month = startDate.add(Duration(days: i)).month;
-
-      // day
-      int day = startDate.add(Duration(days: i)).day;
-
-      final percentForEachDay = <DateTime, int>{
-        DateTime(year, month, day): (10 * strengthAsPercent).toInt(),
-      };
-
-      heatMapDataSet.addEntries(percentForEachDay.entries);
-      print(heatMapDataSet);
+      DateTime date = startDate.add(Duration(days: i));
+      heatMapDataSet[date] = (10 * strengthAsPercent).toInt();
     }
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:weight/datetime/date_time.dart';
 
-
 class MonthlySummary extends StatelessWidget {
   final Map<DateTime, int>? datasets;
   final String startDate;
@@ -19,10 +18,10 @@ class MonthlySummary extends StatelessWidget {
       padding: const EdgeInsets.only(top: 25, bottom: 25),
       child: HeatMap(
         startDate: createDateTimeObject(startDate),
-        endDate: DateTime.now().add(const Duration(days: 0)),
+        endDate: DateTime.now().add(const Duration(days: 21)),
         datasets: datasets,
         colorMode: ColorMode.color,
-        defaultColor: const Color.fromARGB(255, 49, 23, 23),
+        defaultColor: const Color.fromARGB(255, 110, 83, 83),
         textColor: Colors.white,
         showColorTip: false,
         showText: true,
@@ -41,8 +40,19 @@ class MonthlySummary extends StatelessWidget {
           10: Color.fromARGB(255, 2, 179, 8),
         },
         onClick: (value) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(value.toString())));
+          // Check if the clicked date has a weight entry in the datasets
+          final weight = datasets?[value];
+
+          // Show the weight in a SnackBar
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                weight != null
+                    ? "Weight on ${value.toString().substring(0, 10)}: $weight kg"
+                    : "No weight record for ${value.toString().substring(0, 10)}",
+              ),
+            ),
+          );
         },
       ),
     );

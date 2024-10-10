@@ -51,8 +51,8 @@ class HabitTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // checkbox
               Checkbox(
+                activeColor: Colors.white,
                 value: habitCompleted,
                 onChanged: onChanged,
               ),
