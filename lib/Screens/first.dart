@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FirstRunScreen extends StatefulWidget {
   const FirstRunScreen({super.key});
@@ -10,7 +10,26 @@ class FirstRunScreen extends StatefulWidget {
 
 class _FirstRunScreenState extends State<FirstRunScreen> {
   final TextEditingController _nameController = TextEditingController();
+  String? _savedName; // Variable to hold the saved name
 
+  @override
+  void initState() {
+    super.initState();
+    _loadName(); // Load the saved name when the widget initializes
+  }
+
+  Future<void> _loadName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _savedName = prefs.getString('userName'); 
+    });
+  }
+
+  Future<void> _saveName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userName', _nameController.text); 
+    _loadName(); // Reload the name after saving
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,17 +57,27 @@ class _FirstRunScreenState extends State<FirstRunScreen> {
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 30),
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Your Name',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+            if (_savedName == null) ...[
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Your Name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
-            ),
-          
-         
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _saveName, 
+                child: const Text('Save Name'),
+              ),
+            ] else ...[
+              Text(
+                'Hello, $_savedName!',
+                style: const TextStyle(fontSize: 20),
+              ),
+            ],
           ],
         ),
       ),

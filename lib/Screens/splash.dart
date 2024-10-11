@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:weight/Screens/first.dart';
 import 'package:weight/Screens/home.dart';
 
 class Splash extends StatelessWidget {
@@ -10,7 +11,7 @@ class Splash extends StatelessWidget {
     return  Scaffold(
       body: GestureDetector(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const FirstRunScreen()));
         },
         child: Container(
           color: Colors.green,
