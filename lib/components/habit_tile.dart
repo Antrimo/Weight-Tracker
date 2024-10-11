@@ -26,7 +26,6 @@ class HabitTile extends StatelessWidget {
         endActionPane: ActionPane(
           motion: const StretchMotion(),
           children: [
-            // settings option
             SlidableAction(
               onPressed: settingsTapped,
               backgroundColor: Colors.grey.shade800,
@@ -34,7 +33,6 @@ class HabitTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
 
-            // delete option
             SlidableAction(
               onPressed: deleteTapped,
               backgroundColor: Colors.red.shade400,
@@ -57,7 +55,6 @@ class HabitTile extends StatelessWidget {
                 onChanged: onChanged,
               ),
 
-              // habit name
               Text(habitName),
             ],
           ),

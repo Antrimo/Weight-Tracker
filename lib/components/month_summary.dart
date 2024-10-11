@@ -40,20 +40,23 @@ class MonthlySummary extends StatelessWidget {
           10: Color.fromARGB(255, 2, 179, 8),
         },
         onClick: (value) {
-          // Check if the clicked date has a weight entry in the datasets
-          final weight = datasets?[value];
-
-          // Show the weight in a SnackBar
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                weight != null
-                    ? "Weight on ${value.toString().substring(0, 10)}: $weight kg"
-                    : "No weight record for ${value.toString().substring(0, 10)}",
-              ),
-            ),
-          );
-        },
+              final weight = datasets?[value];
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    weight != null
+                        ? "Weight on ${value.toLocal().toString().substring(0, 10)}: $weight kg"
+                        : "No weight record for ${value.toLocal().toString().substring(0, 10)}",
+                  ),
+                  duration: const Duration(seconds: 2),
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: weight != null ? Colors.green : Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              );
+            },
       ),
     );
   }

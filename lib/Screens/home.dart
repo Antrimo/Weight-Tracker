@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:weight/Notification/notifi_service.dart';
 import 'package:weight/components/habit_tile.dart';
 import 'package:weight/components/month_summary.dart';
 import 'package:weight/components/my_alert_box.dart';
 import 'package:weight/data/habit_database.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class WeightHomePage extends StatefulWidget {
+  const WeightHomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<WeightHomePage> createState() => _WeightHomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _WeightHomePageState extends State<WeightHomePage> {
   HabitDatabase db = HabitDatabase();
   final _myBox = Hive.box("Habit_Database");
 
@@ -70,11 +71,11 @@ class _HomePageState extends State<HomePage> {
   void saveWeight() {
     setState(() {
       String weight = _newWeightController.text;
-      db.saveWeight(weight); // Call the correct database method
+      db.saveWeight(weight);  
     });
     _newWeightController.clear();
     Navigator.of(context).pop();
-    db.updateDatabase(); // Update the database
+    db.updateDatabase();  
   }
 
   void saveNewHabit() {
@@ -126,9 +127,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 44, 38, 38),
         automaticallyImplyLeading: false,
-        title: const Center(child: Text('Weight Tracker')),
+        title: const Text('Weight Tracker',style: TextStyle(fontStyle: FontStyle.italic,fontWeight: FontWeight.bold),),
       ),
+      endDrawer: const HomePage(),
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
@@ -160,7 +163,7 @@ class _HomePageState extends State<HomePage> {
             child: FloatingActionButton(
               heroTag: 'weight',
               onPressed: recordWeight,
-              child: const Icon(Icons.line_weight),
+              child: const Icon(Icons.health_and_safety_rounded),
             ),
           ),
           Positioned(
