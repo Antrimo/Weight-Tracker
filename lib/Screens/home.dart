@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:weight/Notification/notifi_service.dart';
 import 'package:weight/components/habit_tile.dart';
 import 'package:weight/components/month_summary.dart';
 import 'package:weight/components/my_alert_box.dart';
 import 'package:weight/data/habit_database.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class WeightHomePage extends StatefulWidget {
+  const WeightHomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<WeightHomePage> createState() => _WeightHomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _WeightHomePageState extends State<WeightHomePage> {
   HabitDatabase db = HabitDatabase();
   final _myBox = Hive.box("Habit_Database");
 
@@ -127,8 +128,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Center(child: Text('Weight Tracker')),
+        title: const Text('Weight Tracker',style: TextStyle(fontStyle: FontStyle.italic),),
       ),
+      endDrawer: const HomePage(),
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [

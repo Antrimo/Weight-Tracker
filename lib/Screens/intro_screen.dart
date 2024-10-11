@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:weight/Screens/home.dart';
 
 class FirstRunScreen extends StatefulWidget {
   const FirstRunScreen({super.key});
@@ -94,14 +95,61 @@ class _FirstRunScreenState extends State<FirstRunScreen> {
                     ),
                   ),
                 )
-              ] else ...[
-                Center(
-                  child: Text(
-                    'Hello, $_savedName!',
-                    style: const TextStyle(fontSize: 20),
-                  ),
+              ]else ...[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 70),
+                    Lottie.asset('assets/weight.json'),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Let\'s Get Started!', 
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10), 
+                    Center(
+                      child: Text(
+                        'Hello, $_savedName!',
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    const SizedBox(height: 20), 
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const WeightHomePage()));
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24), 
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(155, 155, 155, 110),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color.fromARGB(50, 0, 0, 0), 
+                              offset: Offset(0, 4),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Let\'s Continue',
+                            style: TextStyle(
+                              color: Colors.white, 
+                              fontSize: 16, 
+                              fontWeight: FontWeight.bold, 
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ],
+
           
               const SizedBox(height: 20),
             ],

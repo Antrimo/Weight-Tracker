@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -33,13 +32,6 @@ Future<void> main() async {
     onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) {
       selectNotificationStream.add(notificationResponse.payload);
     },
-  );
-
-  runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomePage(),
-    ),
   );
 }
 
@@ -84,29 +76,40 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text('Notification App')),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
           children: <Widget>[
-            ElevatedButton(
-              onPressed: () async {
-                await _showNotification();
-              },
-              child: const Text('Show Notification'),
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                await _scheduleNotification();
+            ListTile(
+              leading: const Icon(Icons.notifications),
+              title: const Text('Show Notification'),
+              onTap: () async {
+                await _showNotification();
+                Navigator.pop(context);  // Close the drawer after selection
               },
-              child: const Text('Schedule Notification'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.schedule),
+              title: const Text('Schedule Notification'),
+              onTap: () async {
+                await _scheduleNotification();
+                Navigator.pop(context);  // Close the drawer after selection
+              },
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -178,80 +181,4 @@ class _HomePageState extends State<HomePage> {
       );
     }
   }
-}
-
-class SetNotification extends StatefulWidget {
-  const SetNotification(
-    this.payload, {
-    super.key,
-  });
-
-  static const String routeName = '/SetNotification';
-
-  final String? payload;
-
-  @override
-  State<StatefulWidget> createState() => SetNotificationState();
-}
-
-class SetNotificationState extends State<SetNotification> {
-  String? _payload;
-
-  @override
-  void initState() {
-    super.initState();
-    _payload = widget.payload;
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Second Screen'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text('payload: ${_payload ?? ''}'),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Go back!'),
-              ),
-            ],
-          ),
-        ),
-      );
-}
-
-class _InfoValueString extends StatelessWidget {
-  const _InfoValueString({
-    required this.title,
-    required this.value,
-    super.key,
-  });
-
-  final String title;
-  final Object? value;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-        child: Text.rich(
-          TextSpan(
-            children: <InlineSpan>[
-              TextSpan(
-                text: '$title ',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextSpan(
-                text: '$value',
-              ),
-            ],
-          ),
-        ),
-      );
 }
