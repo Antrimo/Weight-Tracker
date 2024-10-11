@@ -100,9 +100,9 @@ class _HomePageState extends State<HomePage> {
             ),
             ElevatedButton(
               onPressed: () async {
-                await _zonedScheduleNotification();
+                await _scheduleNotification();
               },
-              child: const Text('Schedule 5-sec Notification'),
+              child: const Text('Schedule Notification'),
             ),
           ],
         ),
@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _showNotification() async {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      'your_channel_id', 
+      'your_channel_id',
       'your_channel_name',
       channelDescription: 'channel_description',
       importance: Importance.max,
@@ -132,26 +132,51 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> _zonedScheduleNotification() async {
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      id++,
-      'Scheduled Title',
-      'Scheduled Body',
-      tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'your_channel_id',
-          'your_channel_name',
-          channelDescription: 'your_channel_description',
-          importance: Importance.max,
-          priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
-        ),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+  Future<void> _scheduleNotification() async {
+    TimeOfDay? selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
     );
+
+    if (selectedTime != null) {
+      // Get the current date
+      DateTime now = DateTime.now();
+
+      // Create a DateTime for the scheduled notification
+      DateTime scheduledDateTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        selectedTime.hour,
+        selectedTime.minute,
+      );
+
+      // Check if the scheduled time is in the past, if so, schedule it for the next day
+      if (scheduledDateTime.isBefore(now)) {
+        scheduledDateTime = scheduledDateTime.add(const Duration(days: 1));
+      }
+
+      // Schedule the notification
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        id++,
+        'Scheduled Title',
+        'Scheduled Body',
+        tz.TZDateTime.from(scheduledDateTime, tz.local),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'your_channel_id',
+            'your_channel_name',
+            channelDescription: 'your_channel_description',
+            importance: Importance.max,
+            priority: Priority.high,
+            icon: '@mipmap/ic_launcher',
+          ),
+        ),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    }
   }
 }
 

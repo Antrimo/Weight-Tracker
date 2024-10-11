@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:weight/Screens/first.dart';
-import 'package:weight/Screens/home.dart';
-
 class Splash extends StatelessWidget {
   const Splash({super.key});
 
