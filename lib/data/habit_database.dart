@@ -31,12 +31,10 @@ class HabitDatabase {
         todaysHabitList[i][1] = false; 
       }
     } else {
-      // Load data for today
       todaysHabitList = List.from(_myBox.get(todaysDateFormatted()));
     }
   }
 
-  /// Save habit list and weight list to the Hive database
   void updateDatabase() {
     _myBox.put(todaysDateFormatted(), todaysHabitList); 
     _myBox.put("CURRENT_HABIT_LIST", todaysHabitList); 
@@ -45,29 +43,24 @@ class HabitDatabase {
     loadHeatMap();
   }
 
-  /// Save weight with today's date in the weight list
   void saveWeight(String weight) {
   String today = todaysDateFormatted();
   
-  // Check if today's weight entry already exists and update it
   int index = weightList.indexWhere((entry) => entry['date'] == today);
   
   if (index != -1) {
-    // If weight entry exists, update it
     weightList[index]['weight'] = weight;
   } else {
-    // If no entry exists for today, add a new one
     weightList.add({
       "date": today,
       "weight": weight,
     });
   }
 
-  updateDatabase(); // Ensure the database is updated after saving
+  updateDatabase(); 
 }
 
 
-  /// Calculate the percentage of completed habits
   void calculateHabitPercentages() {
     int countCompleted = todaysHabitList.where((habit) => habit[1] == true).length;
     String percent = todaysHabitList.isEmpty
@@ -77,7 +70,6 @@ class HabitDatabase {
     _myBox.put("PERCENTAGE_SUMMARY_${todaysDateFormatted()}", percent);
   }
 
-  /// Load the heat map data based on habit completion percentages
   void loadHeatMap() {
     DateTime startDate = createDateTimeObject(_myBox.get("START_DATE"));
     int daysInBetween = DateTime.now().difference(startDate).inDays;

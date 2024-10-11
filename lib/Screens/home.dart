@@ -71,11 +71,11 @@ class _WeightHomePageState extends State<WeightHomePage> {
   void saveWeight() {
     setState(() {
       String weight = _newWeightController.text;
-      db.saveWeight(weight); // Call the correct database method
+      db.saveWeight(weight);  
     });
     _newWeightController.clear();
     Navigator.of(context).pop();
-    db.updateDatabase(); // Update the database
+    db.updateDatabase();  
   }
 
   void saveNewHabit() {
@@ -127,8 +127,9 @@ class _WeightHomePageState extends State<WeightHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 44, 38, 38),
         automaticallyImplyLeading: false,
-        title: const Text('Weight Tracker',style: TextStyle(fontStyle: FontStyle.italic),),
+        title: const Text('Weight Tracker',style: TextStyle(fontStyle: FontStyle.italic,fontWeight: FontWeight.bold),),
       ),
       endDrawer: const HomePage(),
       body: Stack(
@@ -162,7 +163,7 @@ class _WeightHomePageState extends State<WeightHomePage> {
             child: FloatingActionButton(
               heroTag: 'weight',
               onPressed: recordWeight,
-              child: const Icon(Icons.line_weight),
+              child: const Icon(Icons.health_and_safety_rounded),
             ),
           ),
           Positioned(

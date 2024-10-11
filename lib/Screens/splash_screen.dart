@@ -12,7 +12,7 @@ class Splash extends StatelessWidget {
           Navigator.push(context, MaterialPageRoute(builder: (context) => const FirstRunScreen()));
         },
         child: Container(
-          color: Colors.green,
+          color: const Color.fromARGB(255, 36, 83, 38),
           alignment: Alignment.center,
           child: Lottie.asset('assets/health.json'),
         ),

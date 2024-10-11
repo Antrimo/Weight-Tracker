@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:lottie/lottie.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -80,24 +81,18 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
+             DrawerHeader(
+              decoration: const BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
+              child: Lottie.asset('assets/notification.json'),
             ),
             ListTile(
               leading: const Icon(Icons.notifications),
               title: const Text('Show Notification'),
               onTap: () async {
                 await _showNotification();
-                Navigator.pop(context);  // Close the drawer after selection
+                Navigator.pop(context);  
               },
             ),
             ListTile(
@@ -105,7 +100,7 @@ class _HomePageState extends State<HomePage> {
               title: const Text('Schedule Notification'),
               onTap: () async {
                 await _scheduleNotification();
-                Navigator.pop(context);  // Close the drawer after selection
+                Navigator.pop(context);  
               },
             ),
           ],
@@ -142,10 +137,8 @@ class _HomePageState extends State<HomePage> {
     );
 
     if (selectedTime != null) {
-      // Get the current date
       DateTime now = DateTime.now();
 
-      // Create a DateTime for the scheduled notification
       DateTime scheduledDateTime = DateTime(
         now.year,
         now.month,
@@ -154,12 +147,10 @@ class _HomePageState extends State<HomePage> {
         selectedTime.minute,
       );
 
-      // Check if the scheduled time is in the past, if so, schedule it for the next day
       if (scheduledDateTime.isBefore(now)) {
         scheduledDateTime = scheduledDateTime.add(const Duration(days: 1));
       }
 
-      // Schedule the notification
       await flutterLocalNotificationsPlugin.zonedSchedule(
         id++,
         'Scheduled Title',
